@@ -1,6 +1,6 @@
 password = input("Enter password: ")
 original_passwd = "Qwerty123"
 if original_passwd == password:
-    print("Password corrrect!")
+    print("Password correct!")
 else:
     print("Password incorrect")
