@@ -1,11 +1,11 @@
-def int_func(words):
-    result = ""
-    for word in words:
-        word = word[0].upper() + word[1:]
-        result += word + " "
-    return result
 
+from  math import factorial
 
-string = input("Введите строку из слов, разделенных пробелом, где каждое слово состоит из латинских букв "
-               "в нижнем регистре: ")
-print(int_func(string.split()))
+e = int(input("Введите конечное число: "))
+
+def fact(n):
+  for i in range(1,n + 1):
+    yield(factorial(i))
+
+for el in fact(e):
+  print(el)
