@@ -1,78 +1,124 @@
 class Car:
-    # atributes
-    def __init__(self, speed, color, name, is_police):
-        self.speed = speed
+    """ Базовый класс автомобиля """
+    def __init__(
+            self,
+            color: str,
+            name: str,
+            is_police: bool = False
+    ):
+        """
+        :param color: Цвет авто
+        :param name: Модель (название) авто
+        :param is_police: Признак полицейности
+        """
         self.color = color
         self.name = name
-        self.is_police = is_police
+        self.is_police = True if is_police else False
 
-    # methods
-    def go(self):
-        return f'{self.name} is started'
+        self.speed = 0
+        self._direction = ''
+
+    def go(self, speed: float):
+        """ Начинает движение авто с заданной скоростью
+        :param speed: Скорость движения
+        """
+        try:
+            self.speed = float(speed)
+        except ValueError:
+            pass
 
     def stop(self):
-        return f'{self.name} is stopped'
+        """ Останавливает авто """
+        self.speed = 0
 
-    def turn_right(self):
-        return f'{self.name} is turned right'
+    def turn(self, direction: str):
+        """ Задает поворот авто в движении
+        :param direction: направление поворота ('left', 'right')
+        """
+        if direction not in ('left', 'right'):
+            print(f"'{direction}' invalid direction")
+            return
 
-    def turn_left(self):
-        return f'{self.name} is turned left'
+        if not self.speed:
+            print(f"'Can't turn to {direction}' in place")
+            return
+
+        self._direction = direction
 
     def show_speed(self):
-        return f'Current speed {self.name} is {self.speed}'
+        """ Показать текущуую скорость """
+        print(f'My speed is {self.speed} km/h')
+
+        if (hasattr(self, '_max_granted_speed')
+                and self._max_granted_speed
+                and self.speed > self._max_granted_speed):
+            print(f'Over speed on {self.speed - self._max_granted_speed} km/h')
+
+    @property
+    def direction(self):
+        """ Показать текущее направление """
+        return self._direction
 
 
 class TownCar(Car):
-    def __init__(self, speed, color, name, is_police):
-        super().__init__(speed, color, name, is_police)
+    """ Класс городских автомобилей """
+    # максимальная скорость движения
+    _max_granted_speed = 60
 
-    def show_speed(self):
-        print(f'Current speed of town car {self.name} is {self.speed}')
-
-        if self.speed > 40:
-            return f'Speed of {self.name} is higher than allow for town car'
-        else:
-            return f'Speed of {self.name} is normal for town car'
 
 class SportCar(Car):
-    def __init__(self, speed, color, name, is_police):
-        super().__init__(speed, color, name, is_police)
+    """ Класс спортивный автомобилей """
+    pass
 
 
 class WorkCar(Car):
-    def __init__(self, speed, color, name, is_police):
-        super().__init__(speed, color, name, is_police)
-
-    def show_speed(self):
-        print(f'Current speed of work car {self.name} is {self.speed}')
-
-        if self.speed > 60:
-            return f'Speed of {self.name} is higher than allow for work car'
+    """ Класс авто для работы """
+    # максимальная скорость движения
+    _max_granted_speed = 40
 
 
 class PoliceCar(Car):
-    def __init__(self, speed, color, name, is_police):
-        super().__init__(speed, color, name, is_police)
-
-    def police(self):
-        if self.is_police:
-            return f'{self.name} is from police department'
-        else:
-            return f'{self.name} is not from police department'
+    """ Класс полицейского авто """
+    def __init__(self, *args):
+        """
+        :param args: Параметры авто
+        """
+        super().__init__(*args, is_police=True)
 
 
-audi = SportCar(100, 'Red', 'Tesla model S', False)
-oka = TownCar(30, 'White', 'BMW i3', False)
-lada = WorkCar(70, 'Rose', 'VW T5', True)
-ford = PoliceCar(110, 'Blue',  'Ford focus', True)
-print(lada.turn_left())
-print(f'When {oka.turn_right()}, then {audi.stop()}')
-print(f'{lada.go()} with speed exactly {lada.show_speed()}')
-print(f'{lada.name} is {lada.color}')
-print(f'Is {audi.name} a police car? {audi.is_police}')
-print(f'Is {lada.name}  a police car? {lada.is_police}')
-print(audi.show_speed())
-print(oka.show_speed())
-print(ford.police())
-print(ford.show_speed())
+if __name__ == '__main__':
+    cars_data = {
+        ('Yellow', 'Aston Martin Cygnet'): TownCar,
+        ('Green', 'BMW M3'): SportCar,
+        ('White', 'VAZ 2106'): WorkCar,
+        ('Red', 'Ford Crown Victoria'): PoliceCar,
+    }
+
+    for car_descr, car_cls in cars_data.items():
+        car = car_cls(*car_descr)
+
+        print('#######################################')
+        print(f"Car name '{car.name}'")
+        print(f"Car color '{car.color}'")
+        print(f"Car is police '{car.is_police}'")
+        print(f"Car speed '{car.speed}'")
+        print(f"Car direction '{car.direction}'")
+        print(f"Car show speed '{car.show_speed()}'")
+
+        car.turn('right')
+        car.turn('left')
+        car.go('260')
+        print("Car speed after invalid go", car.speed)
+        car.go(30)
+        car.show_speed()
+        car.go(45)
+        car.show_speed()
+        car.go(75)
+        car.show_speed()
+        car.turn('left')
+        print(f"Car direction '{car.direction}'")
+        car.turn('right')
+        print(f"Car direction '{car.direction}'")
+        car.stop()
+        car.show_speed()
+        print('#######################################\n\n')
